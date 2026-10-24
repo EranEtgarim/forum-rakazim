@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>פורום רכזים - שיח עמיתים</title>
+  <style>
+    :root {
+      --primary-blue: #2F86C4;
+      --primary-orange: #F45A24;
+      --bg-color: #F7F8FA;
+      --card-bg: #FFFFFF;
+      --text-main: #2C3E50;
+      --text-muted: #7F8C8D;
+      --border-color: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* Global Activity Timer Banner */
+    #global-timer-bar {
+      background-color: var(--primary-blue);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    #global-timer-bar span {
+      font-size: 16px;
+      margin-right: 6px;
+      font-family: monospace;
+    }
+
+    /* Stepper / Progress Bar */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .step-item {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-left: 8px;
+    }
+
+    .step-item.active {
+      color: var(--primary-blue);
+      font-weight: bold;
+    }
+
+    .step-item .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #CBD5E1;
+      margin-left: 4px;
+    }
+
+    .step-item.active .dot {
+      background-color: var(--primary-blue);
+      transform: scale(1.2);
+    }
+
+    /* Main Container */
+    .container {
+      flex: 1;
+      max-width: 500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Cards & Typography */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    h1 {
+      font-size: 26px;
+      color: var(--primary-blue);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 20px;
+      color: var(--primary-blue);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #F8FAFC;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--primary-blue);
+      background-color: #FFFFFF;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 10px;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-blue);
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background-color: #E2E8F0;
+      color: var(--text-main);
+    }
+
+    .btn-orange {
+      background-color: var(--primary-orange);
+      color: #FFFFFF;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--primary-blue);
+      color: var(--primary-blue);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-row .btn {
+      flex: 1;
+    }
+
+    /* Question Cards List */
+    .question-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .question-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-right: 4px solid var(--primary-blue);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .question-item:active {
+      background-color: #EDF2F7;
+    }
+
+    .question-item.selected {
+      border-right-color: var(--primary-orange);
+      background-color: #FFF5F2;
+    }
+
+    /* Timer Ring Display */
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .svg-timer {
+      width: 220px;
+      height: 220px;
+      transform: rotate(-90deg);
+    }
+
+    .svg-timer circle {
+      fill: none;
+      stroke-width: 14;
+    }
+
+    .svg-timer .bg-ring {
+      stroke: #E2E8F0;
+    }
+
+    .svg-timer .progress-ring {
+      stroke: var(--primary-orange);
+      stroke-dasharray: 565;
+      stroke-dashoffset: 0;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s linear;
+    }
+
+    .timer-center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .timer-speaker {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--primary-blue);
+      margin-bottom: 4px;
+    }
+
+    .timer-digits {
+      font-size: 38px;
+      font-weight: bold;
+      font-family: monospace;
+      color: var(--text-main);
+    }
+
+    .timer-phase-title {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Random Draw Display */
+    .draw-box {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .draw-box .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .draw-box .name {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-blue);
+      margin-bottom: 20px;
+    }
+
+    /* Fullscreen Mat Alert Screen */
+    #mat-alert-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--primary-orange);
+      color: #FFFFFF;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    #mat-alert-screen.active {
+      display: flex;
+    }
+
+    #mat-alert-screen h1 {
+      color: #FFFFFF;
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    #mat-alert-screen p {
+      font-size: 20px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    #mat-alert-screen .box {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      width: 100%;
+      max-width: 320px;
+      text-align: right;
+    }
+
+    #mat-alert-screen .box div {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Global Timer Banner -->
+  <div id="global-timer-bar">
+    נותרו לפעילות: <span id="global-time-display">30:00</span>
+  </div>
+
+  <!-- Stepper / Progress Bar -->
+  <div class="stepper" id="stepper">
+    <div class="step-item active" id="step-pingpong"><span class="dot"></span>פינג פונג</div>
+    <div class="step-item" id="step-s1"><span class="dot"></span>הצלחות</div>
+    <div class="step-item" id="step-s2"><span class="dot"></span>אתגרים</div>
+    <div class="step-item" id="step-s3"><span class="dot"></span>סטנדרטים</div>
+    <div class="step-item" id="step-s4"><span class="dot"></span>מבט קדימה</div>
+    <div class="step-item" id="step-summary"><span class="dot"></span>סיכום</div>
+  </div>
+
+  <div class="container">
+
+    <!-- SCREEN 1: Welcome -->
+    <div id="screen-welcome" class="screen active">
+      <div class="card" style="margin-top: 20px;">
+        <h1>פורום רכזים</h1>
+        <div class="subtitle">שיח עמיתים בין רכזים ורכזות</div>
+        
+        <div class="form-group">
+          <label for="input-user-a">משתתף/ת א'</label>
+          <input type="text" id="input-user-a" placeholder="הכנס שם...">
+        </div>
+
+        <div class="form-group">
+          <label for="input-user-b">משתתף/ת ב'</label>
+          <input type="text" id="input-user-b" placeholder="הכנס שם...">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="startApp()">▶️ התחל</button>
+      <button class="btn btn-outline" onclick="showScreen('screen-settings')">⚙️ הגדרות מנחה</button>
+    </div>
+
+    <!-- SCREEN 2: Settings -->
+    <div id="screen-settings" class="screen">
+      <div class="card">
+        <h2>הגדרות מנחה</h2>
+
+        <div class="form-group">
+          <label for="set-pingpong-count">מספר שאלות פינג פונג</label>
+          <select id="set-pingpong-count">
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="8" selected>8</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="15">15</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-speaker1-time">משך דובר ראשון (בדקות)</label>
+          <select id="set-speaker1-time">
+            <option value="1">1 דקה</option>
+            <option value="2" selected>2 דקות</option>
+            <option value="3">3 דקות</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-speaker2-time">משך דובר שני (בדקות)</label>
+          <select id="set-speaker2-time">
+            <option value="1">1 דקה</option>
+            <option value="2" selected>2 דקות</option>
+            <option value="3">3 דקות</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-deepen-time">משך העמקה (בדקות)</label>
+          <select id="set-deepen-time">
+            <option value="1">1 דקה</option>
+            <option value="2" selected>2 דקות</option>
+            <option value="3">3 דקות</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-total-time">משך פעילות כולל (בדקות)</label>
+          <select id="set-total-time">
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30" selected>30</option>
+            <option value="35">35</option>
+            <option value="40">40</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-mat-time">התראת מחצלת (דקות לפני הסיום)</label>
+          <select id="set-mat-time">
+            <option value="1">1 דקה</option>
+            <option value="2" selected>2 דקות</option>
+            <option value="3">3 דקות</option>
+            <option value="5">5 דקות</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-sound">צליל בסיום מקטע</label>
+          <select id="set-sound">
+            <option value="yes" selected>כן</option>
+            <option value="no">לא</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-vibrate">רטט בסיום מקטע</label>
+          <select id="set-vibrate">
+            <option value="yes" selected>כן</option>
+            <option value="no">לא</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="saveSettingsAndStart()">שמור והתחל</button>
+      <button class="btn btn-secondary" onclick="restartApp()">התחל מחדש</button>
+    </div>
+
+    <!-- SCREEN 3: Station (Ping-Pong or Stations 1-4) -->
+    <div id="screen-station" class="screen">
+      <div class="card">
+        <h2 id="station-title">חלק א' - פינג פונג</h2>
+        <p class="subtitle" id="station-subtitle">לחצו על שאלה או בחרו בשבילנו</p>
+        
+        <button class="btn btn-orange" id="btn-random-pick" onclick="pickRandomQuestion()" style="display:none;">🎲 בחרו בשבילנו</button>
+
+        <div class="question-list" id="question-container"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: Draw Speaker -->
+    <div id="screen-draw" class="screen">
+      <div class="card draw-box">
+        <div class="icon">🎲</div>
+        <div style="font-size: 16px; color: var(--text-muted); margin-bottom: 8px;">מי מתחיל/ה?</div>
+        <div class="name" id="draw-winner-name">ערן מתחיל</div>
+        <button class="btn btn-primary" onclick="startTimerPhase('speaker1')">התחל</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: Timer Screen -->
+    <div id="screen-timer" class="screen">
+      <div class="card" style="text-align: center;">
+        <div id="selected-question-display" style="font-size: 15px; font-weight: bold; color: var(--text-main); margin-bottom: 12px; padding: 10px; background: #EDF2F7; border-radius: 8px;">
+          השאלה שתנדון כעת...
+        </div>
+
+        <div class="timer-container">
+          <svg class="svg-timer">
+            <circle class="bg-ring" cx="110" cy="110" r="90"></circle>
+            <circle class="progress-ring" id="timer-ring" cx="110" cy="110" r="90"></circle>
+          </svg>
+          <div class="timer-center-text">
+            <div class="timer-speaker" id="timer-speaker-label">🎤 ערן</div>
+            <div class="timer-digits" id="timer-digits-display">02:00</div>
+            <div class="timer-phase-title" id="timer-phase-label">דובר ראשון</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btn-pause-resume" onclick="togglePauseTimer()">השהה</button>
+          <button class="btn btn-primary" onclick="skipToNextPhase()">לחלק הבא</button>
+        </div>
+        <button class="btn btn-outline" onclick="resetCurrentTimer()">התחל מחדש</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: Summary -->
+    <div id="screen-summary" class="screen">
+      <div class="card">
+        <h2>מסך סיכום</h2>
+
+        <div class="form-group">
+          <label for="summary-insight">💡 תובנה אחת שלקחתם</label>
+          <textarea id="summary-insight" placeholder="רשמו כאן תובנה מרכזית..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="summary-question">❓ שאלה אחת להמשך הדיון</label>
+          <textarea id="summary-question" placeholder="רשמו כאן שאלה לפורום..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="finishActivity()">סיימנו</button>
+      <button class="btn btn-secondary" onclick="restartApp()">התחל מחדש</button>
+    </div>
+
+  </div>
+
+  <!-- Fullscreen Mat Alert Overlay -->
+  <div id="mat-alert-screen">
+    <h1>⚠️</h1>
+    <h1 id="mat-alert-time-title">נותרו 2 דקות</h1>
+    <p>חזרו למחצלת</p>
+    <div class="box">
+      <div style="font-weight: bold; margin-bottom: 10px;">סכמו בבקשה:</div>
+      <div>💡 תובנה אחת</div>
+      <div>❓ שאלה אחת לפורום</div>
+    </div>
+    <button class="btn btn-primary" style="max-width: 250px; background-color: #FFFFFF; color: var(--primary-orange);" onclick="dismissMatAlert()">הבנתי</button>
+  </div>
+
+  <script>
+    // --- DATABASE & QUESTIONS ---
+    const PINGPONG_QUESTIONS = [
+      "אם היו מבטלים לך משימה אחת קבועה בתפקיד, איזו היית בוחר?",
+      "כמה לשוניות פתוחות לך עכשיו בדפדפן?",
+      "כשמגיע מדריך חדש אתה חושב: איזה כיף או שוב מההתחלה?",
+      "מה השעה הכי מוזרה שענית לווטסאפ השבוע?",
+      "איזה משפט אתה אומר הכי הרבה למדריכים?",
+      "מה הדבר הכי מוזר שנמצא בתיק שלך כרגע?",
+      "אם היית חייב להחליף ענף לשבוע, במה היית בוחר?",
+      "מה נגמר אצלך מהר יותר: הסוללה או הסבלנות?",
+      "איזה אימוג'י הכי מייצג אותך בעבודה?",
+      "אם היה לך כפתור קסם אחד בעבודה, מה הוא היה עושה?",
+      "מה אתה יותר: איש אקסל או איש אלתור?",
+      "כמה פעמים ביום אתה אומר \"תשלחו לי בוואטסאפ\"?",
+      "איזה חלק בתפקיד היית שמח להעביר למישהו אחר פעם בחודש?",
+      "אם צוות המדריכים היה נותן לך כינוי, מה הוא היה?",
+      "אם היו עושים סדרת טלוויזיה על התפקיד שלך, איך היו קוראים לה?",
+      "מה הדבר האחרון שגרם לך להגיד \"זה לא היה בתכנון\"?",
+      "מה כמות קבוצות הווטסאפ המקסימלית שאדם יכול לשרוד?",
+      "אם היה אפשר להוסיף עוד איש צוות בלחיצת כפתור, איזה תפקיד היית ממציא?"
+    ];
+
+    const STATIONS = [
+      {
+        id: "s1",
+        title: "תחנה 1 - הצלחות וגאווה מקצועית",
+        subtitle: "בחרו שאלה שברצונכם לדון בה",
+        questions: [
+          "על איזו הצלחה שלך כרכז/ת אתה הכי גאה השנה?",
+          "איזה שינוי קטן שעשית יצר השפעה גדולה מהצפוי?",
+          "מה עובד היום אצלך הרבה יותר טוב מאשר לפני שנה?",
+          "ספר/י על מדריך, צוות או קבוצה שעשו השנה קפיצת מדרגה משמעותית. מה אפשר את זה?"
+        ]
+      },
+      {
+        id: "s2",
+        title: "תחנה 2 - האתגרים שמעסיקים אותנו",
+        subtitle: "בחרו שאלה שברצונכם לדון בה",
+        questions: [
+          "מה האתגר המקצועי שהכי מעסיק אותך בתקופה הזו?",
+          "מה הכי שוחק אותך בתפקיד הרכז/ת?",
+          "איפה אתה משקיע הרבה מאמץ אבל רואה מעט השפעה?",
+          "איזה נושא היית שמח לפתוח עליו דיון כן ואמיתי עם כל הפורום?"
+        ]
+      },
+      {
+        id: "s3",
+        title: "תחנה 3 - סטנדרטים וציפיות",
+        subtitle: "בחרו שאלה שברצונכם לדון בה",
+        questions: [
+          "מהו סטנדרט מקצועי אחד שאינך מוכן/ה להתפשר עליו?",
+          "מה מבדיל בעיניך בין מדריך/ה טוב/ה למדריך/ה מצוין/ת?",
+          "באיזה תחום אתה מצפה היום יותר מעצמך מאשר לפני שנתיים?",
+          "איפה אנחנו נוטים לפעמים להתפשר כי אין ברירה?"
+        ]
+      },
+      {
+        id: "s4",
+        title: "תחנה 4 - מבט קדימה",
+        subtitle: "בחרו שאלה שברצונכם לדון בה",
+        questions: [
+          "איזה רעיון או תובנה לקחת מהשיחה?",
+          "מה היית רוצה לנסות לעשות אחרת בחודשים הקרובים?",
+          "מהו נושא אחד שהיית רוצה שהפורום יקדם השנה?",
+          "אם בעוד שנה תסתכל/י אחורה, באיזה תחום היית רוצה לומר שהתקדמת משמעותית?"
+        ]
+      }
+    ];
+
+    // --- APP STATE ---
+    let appConfig = {
+      userA: "משתתף א'",
+      userB: "משתתף ב'",
+      pingPongCount: 8,
+      speaker1TimeSec: 120,
+      speaker2TimeSec: 120,
+      deepenTimeSec: 120,
+      totalActivityTimeSec: 1800,
+      matAlertMin: 2,
+      playSound: true,
+      vibrate: true
+    };
+
+    let currentFlowStage = "pingpong"; // 'pingpong', 's1', 's2', 's3', 's4', 'summary'
+    let currentQuestionsList = [];
+    let selectedQuestionText = "";
+    
+    // Draw & Speaker State
+    let firstSpeakerName = "";
+    let secondSpeakerName = "";
+    let currentTimerPhase = ""; // 'speaker1', 'speaker2', 'deepen'
+
+    // Local Timer State
+    let localTimerInterval = null;
+    let localTimeTotal = 120;
+    let localTimeRemaining = 120;
+    let isLocalTimerPaused = false;
+
+    // Global Activity Timer State
+    let globalTimerInterval = null;
+    let globalTimeRemaining = 1800;
+    let matAlertTriggered = false;
+
+    // Audio Context (Web Audio API)
+    let audioCtx = null;
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+      // Setup Audio Context on first interaction
+      document.body.addEventListener('click', initAudioContext, { once: true });
+    };
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function updateStepper(activeStage) {
+      const stages = ['pingpong', 's1', 's2', 's3', 's4', 'summary'];
+      stages.forEach(st => {
+        const el = document.getElementById(`step-${st}`);
+        if (el) {
+          if (st === activeStage) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    // --- SETUP & START ACTIVITY ---
+    function startApp() {
+      const uA = document.getElementById('input-user-a').value.trim();
+      const uB = document.getElementById('input-user-b').value.trim();
+
+      appConfig.userA = uA || "משתתף/ת א'";
+      appConfig.userB = uB || "משתתף/ת ב'";
+
+      readSettingsForm();
+      startGlobalActivity();
+      loadFlowStage('pingpong');
+    }
+
+    function saveSettingsAndStart() {
+      readSettingsForm();
+      startGlobalActivity();
+      loadFlowStage('pingpong');
+    }
+
+    function readSettingsForm() {
+      appConfig.pingPongCount = parseInt(document.getElementById('set-pingpong-count').value);
+      appConfig.speaker1TimeSec = parseInt(document.getElementById('set-speaker1-time').value) * 60;
+      appConfig.speaker2TimeSec = parseInt(document.getElementById('set-speaker2-time').value) * 60;
+      appConfig.deepenTimeSec = parseInt(document.getElementById('set-deepen-time').value) * 60;
+      appConfig.totalActivityTimeSec = parseInt(document.getElementById('set-total-time').value) * 60;
+      appConfig.matAlertMin = parseInt(document.getElementById('set-mat-time').value);
+      appConfig.playSound = (document.getElementById('set-sound').value === 'yes');
+      appConfig.vibrate = (document.getElementById('set-vibrate').value === 'yes');
+
+      globalTimeRemaining = appConfig.totalActivityTimeSec;
+    }
+
+    // --- GLOBAL ACTIVITY TIMER & MAT ALERT ---
+    function startGlobalActivity() {
+      document.getElementById('global-timer-bar').style.display = 'block';
+      matAlertTriggered = false;
+      
+      if (globalTimerInterval) clearInterval(globalTimerInterval);
+
+      updateGlobalTimerDisplay();
+      globalTimerInterval = setInterval(() => {
+        if (globalTimeRemaining > 0) {
+          globalTimeRemaining--;
+          updateGlobalTimerDisplay();
+
+          // Check Mat Alert
+          const matAlertSeconds = appConfig.matAlertMin * 60;
+          if (!matAlertTriggered && globalTimeRemaining <= matAlertSeconds) {
+            matAlertTriggered = true;
+            triggerMatAlert();
+          }
+        } else {
+          clearInterval(globalTimerInterval);
+        }
+      }, 1000);
+    }
+
+    function updateGlobalTimerDisplay() {
+      const m = Math.floor(globalTimeRemaining / 60).toString().padStart(2, '0');
+      const s = (globalTimeRemaining % 60).toString().padStart(2, '0');
+      document.getElementById('global-time-display').textContent = `${m}:${s}`;
+    }
+
+    function triggerMatAlert() {
+      document.getElementById('mat-alert-time-title').textContent = `נותרו ${appConfig.matAlertMin} דקות`;
+      document.getElementById('mat-alert-screen').classList.add('active');
+      playBeepsAndVibrate();
+    }
+
+    function dismissMatAlert() {
+      document.getElementById('mat-alert-screen').classList.remove('active');
+    }
+
+    // --- FLOW & STATIONS ---
+    function loadFlowStage(stage) {
+      currentFlowStage = stage;
+      updateStepper(stage);
+
+      if (stage === 'pingpong') {
+        document.getElementById('station-title').textContent = "חלק א' - פינג פונג";
+        document.getElementById('station-subtitle').textContent = "לחצו על שאלה לתחילת הסבב";
+        document.getElementById('btn-random-pick').style.display = 'none';
+
+        // Shuffle & pick questions
+        const shuffled = [...PINGPONG_QUESTIONS].sort(() => 0.5 - Math.random());
+        currentQuestionsList = shuffled.slice(0, appConfig.pingPongCount);
+        renderQuestionsList(currentQuestionsList);
+        showScreen('screen-station');
+
+      } else if (stage.startsWith('s')) {
+        const stationObj = STATIONS.find(s => s.id === stage);
+        if (stationObj) {
+          document.getElementById('station-title').textContent = stationObj.title;
+          document.getElementById('station-subtitle').textContent = stationObj.subtitle;
+          document.getElementById('btn-random-pick').style.display = 'block';
+          
+          currentQuestionsList = stationObj.questions;
+          renderQuestionsList(currentQuestionsList);
+          showScreen('screen-station');
+        }
+      } else if (stage === 'summary') {
+        showScreen('screen-summary');
+      }
+    }
+
+    function renderQuestionsList(questions) {
+      const container = document.getElementById('question-container');
+      container.innerHTML = '';
+      questions.forEach((qText, idx) => {
+        const div = document.createElement('div');
+        div.className = 'question-item';
+        div.textContent = `${idx + 1}. ${qText}`;
+        div.onclick = () => selectQuestion(qText);
+        container.appendChild(div);
+      });
+    }
+
+    function pickRandomQuestion() {
+      if (currentQuestionsList.length === 0) return;
+      const idx = Math.floor(Math.random() * currentQuestionsList.length);
+      selectQuestion(currentQuestionsList[idx]);
+    }
+
+    function selectQuestion(qText) {
+      selectedQuestionText = qText;
+      // Perform Random Speaker Draw
+      performRandomDraw();
+    }
+
+    // --- DRAW SPEAKER & TIMER FLOW ---
+    function performRandomDraw() {
+      const isA = Math.random() < 0.5;
+      firstSpeakerName = isA ? appConfig.userA : appConfig.userB;
+      secondSpeakerName = isA ? appConfig.userB : appConfig.userA;
+
+      document.getElementById('draw-winner-name').textContent = `🎤 ${firstSpeakerName} מתחיל/ה`;
+      showScreen('screen-draw');
+    }
+
+    function startTimerPhase(phase) {
+      currentTimerPhase = phase;
+      document.getElementById('selected-question-display').textContent = selectedQuestionText;
+
+      if (phase === 'speaker1') {
+        localTimeTotal = appConfig.speaker1TimeSec;
+        document.getElementById('timer-speaker-label').textContent = `🎤 ${firstSpeakerName}`;
+        document.getElementById('timer-phase-label').textContent = "דובר ראשון";
+      } else if (phase === 'speaker2') {
+        localTimeTotal = appConfig.speaker2TimeSec;
+        document.getElementById('timer-speaker-label').textContent = `🎤 ${secondSpeakerName}`;
+        document.getElementById('timer-phase-label').textContent = "דובר שני";
+      } else if (phase === 'deepen') {
+        localTimeTotal = appConfig.deepenTimeSec;
+        document.getElementById('timer-speaker-label').textContent = "🤝 העמקה משותפת";
+        document.getElementById('timer-phase-label').textContent = "שיח פתוח";
+      }
+
+      localTimeRemaining = localTimeTotal;
+      isLocalTimerPaused = false;
+      document.getElementById('btn-pause-resume').textContent = "השהה";
+
+      showScreen('screen-timer');
+      runLocalTimer();
+    }
+
+    function runLocalTimer() {
+      if (localTimerInterval) clearInterval(localTimerInterval);
+
+      updateTimerUI();
+      localTimerInterval = setInterval(() => {
+        if (!isLocalTimerPaused) {
+          if (localTimeRemaining > 0) {
+            localTimeRemaining--;
+            updateTimerUI();
+          } else {
+            clearInterval(localTimerInterval);
+            onPhaseComplete();
+          }
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      const m = Math.floor(localTimeRemaining / 60).toString().padStart(2, '0');
+      const s = (localTimeRemaining % 60).toString().padStart(2, '0');
+      document.getElementById('timer-digits-display').textContent = `${m}:${s}`;
+
+      // SVG Ring Progress (Circumference ~ 565)
+      const ring = document.getElementById('timer-ring');
+      const progressRatio = localTimeRemaining / localTimeTotal;
+      const offset = 565 * (1 - progressRatio);
+      ring.style.strokeDashoffset = offset;
+    }
+
+    function togglePauseTimer() {
+      isLocalTimerPaused = !isLocalTimerPaused;
+      document.getElementById('btn-pause-resume').textContent = isLocalTimerPaused ? "המשך" : "השהה";
+    }
+
+    function resetCurrentTimer() {
+      localTimeRemaining = localTimeTotal;
+      isLocalTimerPaused = false;
+      document.getElementById('btn-pause-resume').textContent = "השהה";
+      updateTimerUI();
+    }
+
+    function skipToNextPhase() {
+      if (localTimerInterval) clearInterval(localTimerInterval);
+      advancePhase();
+    }
+
+    function onPhaseComplete() {
+      playBeepsAndVibrate();
+      advancePhase();
+    }
+
+    function advancePhase() {
+      if (currentTimerPhase === 'speaker1') {
+        startTimerPhase('speaker2');
+      } else if (currentTimerPhase === 'speaker2') {
+        startTimerPhase('deepen');
+      } else if (currentTimerPhase === 'deepen') {
+        // Move to Next Stage in Flow
+        if (currentFlowStage === 'pingpong') loadFlowStage('s1');
+        else if (currentFlowStage === 's1') loadFlowStage('s2');
+        else if (currentFlowStage === 's2') loadFlowStage('s3');
+        else if (currentFlowStage === 's3') loadFlowStage('s4');
+        else if (currentFlowStage === 's4') loadFlowStage('summary');
+      }
+    }
+
+    // --- SOUND & VIBRATION ---
+    function playBeepsAndVibrate() {
+      // Play Sound (5 Short Beeps)
+      if (appConfig.playSound && audioCtx) {
+        try {
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+          let now = audioCtx.currentTime;
+          for (let i = 0; i < 5; i++) {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, now + i * 0.25); // 880Hz (A5)
+            gain.gain.setValueAtTime(0.3, now + i * 0.25);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.25 + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + i * 0.25);
+            osc.stop(now + i * 0.25 + 0.15);
+          }
+        } catch(e) {
+          console.log("Audio play error:", e);
+        }
+      }
+
+      // Vibration Pattern [200, 100, 200, 100, 200]
+      if (appConfig.vibrate && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 200]);
+      }
+    }
+
+    // --- RESTART & FINISH ---
+    function finishActivity() {
+      alert("תודה רבה! הפעילות הושלמה בהצלחה.");
+      restartApp();
+    }
+
+    function restartApp() {
+      if (localTimerInterval) clearInterval(localTimerInterval);
+      if (globalTimerInterval) clearInterval(globalTimerInterval);
+      document.getElementById('global-timer-bar').style.display = 'none';
+      document.getElementById('summary-insight').value = '';
+      document.getElementById('summary-question').value = '';
+      showScreen('screen-welcome');
+    }
+  </script>
+</body>
+</html>
